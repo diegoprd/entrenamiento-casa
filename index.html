@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workout Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.4;
+        }
+        
+        .app {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        /* NAV TABS */
+        .nav-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #0a0a0a;
+            padding: 12px 8px;
+            border-bottom: 1px solid #1e1e1e;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 10px 4px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #1a1a1a;
+            color: #666;
+            border: 2px solid #2a2a2a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            text-align: center;
+        }
+
+        .nav-tab:hover {
+            background: #222;
+            color: #999;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(145deg, #d4e900, #c4d800);
+            color: #000;
+            border-color: #d4e900;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(212, 233, 0, 0.4);
+        }
+
+
+
+        .nav-tab:active {
+            transform: scale(0.95);
+        }
+
+        /* DAY CONTENT */
+        .day-content {
+            display: none;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .day-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER */
+        .day-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 24px 16px;
+            background: linear-gradient(145deg, #1e1e1e, #161616);
+            border-radius: 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .day-header h1 {
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .day-header .nivel {
+            background: var(--accent);
+            color: #121212;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* COLOR THEMES */
+        [data-day="lunes"] { --accent: #d4e900; }
+        [data-day="martes"] { --accent: #d4e900; }
+        [data-day="miercoles"] { --accent: #d4e900; }
+        [data-day="jueves"] { --accent: #d4e900; }
+        [data-day="viernes"] { --accent: #d4e900; }
+
+
+
+        /* STATS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, var(--accent), var(--accent));
+            color: #121212;
+            padding: 16px 8px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+
+        .stat-card .number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* INFO CARD */
+        .info-card {
+            background: #1e1e1e;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .info-card .icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .info-card h3 {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        /* SECTIONS */
+        .section {
+            background: #1e1e1e;
+            border-radius: 20px;
+            padding: 20px 16px;
+            margin-bottom: 16px;
+        }
+
+        .section.tabata {
+            border: 2px solid var(--accent);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .section-header h2 {
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .section-badge {
+            background: var(--accent);
+            color: #121212;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-instruction {
+            background: rgba(212, 233, 0, 0.08);
+            border: 1px solid rgba(212, 233, 0, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            line-height: 1.5;
+        }
+
+
+        .section-instruction strong {
+            color: #fff;
+        }
+
+        .tabata-header, .hit-header {
+            background: rgba(212, 233, 0, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+
+        .tabata-header .timing,
+        .hit-header .timing {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .tabata-header .subtitle,
+        .hit-header .subtitle {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        /* EXERCISE CARDS */
+        .exercise {
+            background: #262626;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .exercise:active {
+            transform: scale(0.98);
+            background: #2a2a2a;
+        }
+
+        .exercise-inner {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            gap: 14px;
+        }
+
+        .exercise-play {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(145deg, #333, #2a2a2a);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .exercise-play::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 12px solid var(--accent);
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            margin-left: 3px;
+        }
+
+        .exercise-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exercise-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .exercise-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .tag-reps, .tag-time {
+            background: #333;
+            color: #fff;
+        }
+
+        .tag-muscle {
+            background: rgba(212, 233, 0, 0.15);
+            color: var(--accent);
+        }
+
+        .tag-peso {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        /* CONNECTOR */
+        .connector {
+            display: flex;
+            justify-content: center;
+            padding: 4px 0;
+        }
+
+        .connector .arrow {
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        /* REST & REPEAT */
+        .rest-card {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rest-card .label {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .rest-card .time {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .repeat-badge {
+            background: linear-gradient(145deg, #2a2a2a, #222);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .repeat-badge span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* FOOTER */
+        .footer-summary {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .footer-summary .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .footer-summary h3 {
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .footer-summary p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* CARDIO NOTE */
+        .cardio-note {
+            background: linear-gradient(145deg, #1a2a1a, #152015);
+            border: 2px solid #2d5a2d;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cardio-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .cardio-text h4 {
+            color: #6fcf6f;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .cardio-text p {
+            color: #888;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .cardio-text strong {
+            color: #6fcf6f;
+        }
+
+        /* VIDEO MODAL */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-modal-content {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #1e1e1e;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: #333;
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-close:active {
+            background: #444;
+        }
+
+        .video-title {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        /* PWA Install Banner (opcional) */
+        .install-prompt {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- NAVIGATION -->
+        <div class="nav-container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-target="lunes">Lunes</button>
+                <button class="nav-tab" data-target="martes">Martes</button>
+                <button class="nav-tab" data-target="miercoles">Miércoles</button>
+                <button class="nav-tab" data-target="jueves">Jueves</button>
+                <button class="nav-tab" data-target="viernes">Viernes</button>
+            </div>
+        </div>
+
+        <!-- LUNES -->
+        <div class="day-content active" data-day="lunes">
+            <div class="day-header">
+                <h1>💪 LUNES<br>TREN INFERIOR + TABATA</h1>
+                <span class="nivel">NIVEL PRO</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="number">8</div>
+                    <div class="label">Reps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">Series</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40s</div>
+                    <div class="label">Descanso</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">🏋️</div>
+                <div>
+                    <h3>Peso: 5-12 kg por mancuerna</h3>
+                    <p>Ajustá según tu nivel y el ejercicio</p>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 1 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 1</h2>
+                    <span class="section-badge">Fuerza</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 3 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155210047?h=562bdb70cb" data-title="Step Up con Mancuerna">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Step Up con Mancuerna</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Glúteos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155159293?h=756e3f1d99" data-title="Peso Muerto Rumano">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Peso Muerto Rumano</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Isquios • Glúteos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551509852?h=3d193c891a" data-title="Desplante sin Alternar">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Desplante sin Alternar</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Cuádriceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- TABATA 1 -->
+            <div class="section tabata">
+                <div class="section-header">
+                    <h2>TABATA #1</h2>
+                    <span class="section-badge">Cardio</span>
+                </div>
+                
+                <div class="tabata-header">
+                    <div class="timing">30s trabajo → 10s descanso</div>
+                    <div class="subtitle">Alterná × 4 rondas</div>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247917?h=0e061eff2d" data-title="Squat with Calf Raise">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Squat with Calf Raise</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">30 seg</span>
+                                <span class="tag tag-muscle">Piernas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span> 10s</div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431991725?h=df5b615666" data-title="Butt Kicks">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Butt Kicks</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">30 seg</span>
+                                <span class="tag tag-muscle">Cardio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 RONDAS</span> (~5 min)
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 2 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 2</h2>
+                    <span class="section-badge">Fuerza</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420923811?h=43ec3cfb1f" data-title="Desplante Caminando">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Desplante Caminando</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Cuádriceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431984385?h=ff9378090f" data-title="Peso Muerto">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Peso Muerto</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Isquios • Espalda</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155209154?h=d16bd6f55f" data-title="High Knees">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. High Knees</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Cardio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420928613?h=ceed97f2cc" data-title="Lateral Fire Hydrant">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Lateral Fire Hydrant</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Glúteo medio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- TABATA 2 -->
+            <div class="section tabata">
+                <div class="section-header">
+                    <h2>TABATA #2</h2>
+                    <span class="section-badge">Cardio</span>
+                </div>
+                
+                <div class="tabata-header">
+                    <div class="timing">40s trabajo → 10s descanso</div>
+                    <div class="subtitle">Alterná × 4 rondas</div>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155208935?h=c561642da0" data-title="Curtsy Lunge con Mancuernas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Curtsy Lunge con Mancuernas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Glúteos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span> 10s</div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155209839?h=ab0e433c59" data-title="Sentadilla Sumo Pulsaciones">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Sentadilla Sumo Pulsaciones</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Aductores</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 RONDAS</span> (~7 min)
+                </div>
+            </div>
+
+            <div class="footer-summary">
+                <div class="icon">✅</div>
+                <h3>Tiempo total: 45-55 min</h3>
+                <p>Incluye calentamiento y elongación</p>
+            </div>
+
+            <div class="cardio-note">
+                <div class="cardio-icon">🏃</div>
+                <div class="cardio-text">
+                    <h4>Cardio adicional</h4>
+                    <p>Completá con <strong>20-40 min</strong> de cardio: caminata, bici, elíptica o trote suave.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MARTES -->
+        <div class="day-content" data-day="martes">
+            <div class="day-header">
+                <h1>🔥 MARTES<br>CARDIO HIIT + ABDOMEN</h1>
+                <span class="nivel">NIVEL PRO</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="number">40s</div>
+                    <div class="label">Trabajo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">Rondas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40-90s</div>
+                    <div class="label">Descanso</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">💡</div>
+                <div>
+                    <h3>Circuito HIIT + Abdomen</h3>
+                    <p>8 ejercicios × 40 seg cada uno. Descansá entre circuitos.</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">🏋️</div>
+                <div>
+                    <h3>Peso: 3-8 kg por mancuerna</h3>
+                    <p>Peso moderado para mantener intensidad alta</p>
+                </div>
+            </div>
+
+            <!-- HIIT + ABDOMEN -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>HIIT & ABDOMEN</h2>
+                    <span class="section-badge">Circuito</span>
+                </div>
+                
+                <div class="hit-header">
+                    <div class="timing">40 seg trabajo por ejercicio</div>
+                    <div class="subtitle">40-90 seg descanso entre circuitos completos</div>
+                </div>
+
+                <div class="section-instruction">
+                    ⚡ Hacé los 8 ejercicios seguidos → Descansá 40-90 seg → Repetí <strong>4 rondas</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247986?h=6367844610" data-title="Scissors">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Scissors</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Abdomen inferior</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247917?h=0e061eff2d" data-title="Squat with Calf Raise">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Squat with Calf Raise</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Piernas completas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551509852?h=3d193c891a" data-title="Desplante sin Alternar">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Desplante sin Alternar</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Cuádriceps • Glúteos</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420923255?h=02146a44b4" data-title="High Knees">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. High Knees</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Cardio • Core</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/439140643?h=44e70272b9" data-title="Russian Twists">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">5. Russian Twists</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Oblicuos</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155208994?h=ea1907fc4f" data-title="Desplantes Laterales">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">6. Desplantes Laterales</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Aductores • Glúteos</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446988037?h=bfa64066f3" data-title="Encogimiento de Rodillas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">7. Encogimiento de Rodillas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Abdomen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247618?h=853b21c252" data-title="Plancha">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">8. Plancha</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Core • Estabilidad</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso entre circuitos</span>
+                    <span class="time">40-90 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir circuito completo <span>4 VECES</span>
+                </div>
+            </div>
+
+            <div class="footer-summary">
+                <div class="icon">✅</div>
+                <h3>Tiempo total: 30-40 min</h3>
+                <p>Incluye calentamiento y elongación</p>
+            </div>
+
+            <div class="cardio-note">
+                <div class="cardio-icon">🏃</div>
+                <div class="cardio-text">
+                    <h4>Cardio adicional</h4>
+                    <p>Completá con <strong>20-40 min</strong> de cardio: caminata, bici, elíptica o trote suave.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIÉRCOLES -->
+        <div class="day-content" data-day="miercoles">
+            <div class="day-header">
+                <h1>💪 MIÉRCOLES<br>TREN SUPERIOR + TABATA</h1>
+                <span class="nivel">NIVEL PRO</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="number">8</div>
+                    <div class="label">Reps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">Series</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40s</div>
+                    <div class="label">Descanso</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">🏋️</div>
+                <div>
+                    <h3>Peso: 5-10 kg por mancuerna</h3>
+                    <p>Ajustá según tu nivel y el ejercicio</p>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 1 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 1</h2>
+                    <span class="section-badge">Fuerza</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 3 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446991002?h=8dcae84388" data-title="Curl Martillo + Clean Press">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Curl Martillo + Clean Press</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Bíceps • Hombros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431984571?h=278cc541c6" data-title="Press Mancuernas Banco Plano">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Press Mancuernas Banco Plano</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Pecho • Tríceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420420511?h=12fd485f18" data-title="Remo Alternado con Mancuerna">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Remo Alternado con Mancuerna</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Espalda • Bíceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- TABATA 1 -->
+            <div class="section tabata">
+                <div class="section-header">
+                    <h2>TABATA #1</h2>
+                    <span class="section-badge">Cardio</span>
+                </div>
+                
+                <div class="tabata-header">
+                    <div class="timing">40s trabajo → 10s descanso</div>
+                    <div class="subtitle">Alterná × 4 rondas</div>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420923255?h=02146a44b4" data-title="High Knees">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. High Knees</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Cardio • Core</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span> 10s</div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446990237?h=9c20b25fc2" data-title="Thrusters / Sentadilla Press">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Thrusters / Sentadilla Press</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Full Body</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 RONDAS</span> (~7 min)
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 2 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 2</h2>
+                    <span class="section-badge">Fuerza</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431982643?h=b2a2f08ccd" data-title="Elevación Lateral Isolateral">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Elevación Lateral Isolateral</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Hombros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/720111898?h=599edb1c8c" data-title="Copa a Dos Manos">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Copa a Dos Manos</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Tríceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420933006?h=b471169668" data-title="Eccentric Push Up">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Eccentric Push Up</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Pecho • Tríceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431983531?h=05544e65b1" data-title="Curl Martillo">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Curl Martillo</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Bíceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- TABATA 2 -->
+            <div class="section tabata">
+                <div class="section-header">
+                    <h2>TABATA #2</h2>
+                    <span class="section-badge">Cardio</span>
+                </div>
+                
+                <div class="tabata-header">
+                    <div class="timing">40s trabajo → 10s descanso</div>
+                    <div class="subtitle">Alterná × 4 rondas</div>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155208705?h=35b3ab13a3" data-title="Back Pull Apart">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Back Pull Apart</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Espalda • Hombros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span> 10s</div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551520774?h=4c86f33597" data-title="Thrusters con Mancuerna">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Thrusters con Mancuerna</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">40 seg</span>
+                                <span class="tag tag-muscle">Full Body</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 RONDAS</span> (~7 min)
+                </div>
+            </div>
+
+            <div class="footer-summary">
+                <div class="icon">✅</div>
+                <h3>Tiempo total: 45-55 min</h3>
+                <p>Incluye calentamiento y elongación</p>
+            </div>
+
+            <div class="cardio-note">
+                <div class="cardio-icon">🏃</div>
+                <div class="cardio-text">
+                    <h4>Cardio adicional</h4>
+                    <p>Completá con <strong>20-40 min</strong> de cardio: caminata, bici, elíptica o trote suave.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- JUEVES -->
+        <div class="day-content" data-day="jueves">
+            <div class="day-header">
+                <h1>🔥 JUEVES<br>CARDIO HIT + ABDOMEN</h1>
+                <span class="nivel">NIVEL PRO</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="number">40s</div>
+                    <div class="label">Trabajo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">Rondas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40-90s</div>
+                    <div class="label">Descanso</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">💡</div>
+                <div>
+                    <h3>Circuito de alta intensidad</h3>
+                    <p>8 ejercicios × 40 seg cada uno. Descansá entre circuitos.</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">🏋️</div>
+                <div>
+                    <h3>Peso: 3-8 kg por mancuerna</h3>
+                    <p>Peso moderado para mantener intensidad alta</p>
+                </div>
+            </div>
+
+            <!-- HIT + ABDOMEN -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>HIT & ABDOMEN</h2>
+                    <span class="section-badge">Circuito</span>
+                </div>
+                
+                <div class="hit-header">
+                    <div class="timing">40 seg trabajo por ejercicio</div>
+                    <div class="subtitle">40-90 seg descanso entre circuitos completos</div>
+                </div>
+
+                <div class="section-instruction">
+                    ⚡ Hacé los 8 ejercicios seguidos → Descansá 40-90 seg → Repetí <strong>4 rondas</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247986?h=6367844610" data-title="Scissors">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Scissors</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Abdomen inferior</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/439140613?h=aa6a1b2de7" data-title="Hollow Hold">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Hollow Hold</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Core completo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551518639?h=d29ccd39ea" data-title="Russian Twist">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Russian Twist</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Oblicuos</span>
+                                <span class="tag tag-peso">+ peso</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247618?h=853b21c252" data-title="Plancha">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Plancha</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Core • Estabilidad</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155209154?h=d16bd6f55f" data-title="High Knees">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">5. High Knees</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Cardio • Core</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/784382674?h=e3afc1b6f3" data-title="Renegade Row">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">6. Renegade Row</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Espalda • Core</span>
+                                <span class="tag tag-peso">5-8 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446988037?h=bfa64066f3" data-title="Encogimiento Torso y Rodillas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">7. Encogimiento Torso y Rodillas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Abdomen superior</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155208935?h=c561642da0" data-title="Curtsy Lunge con Mancuernas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">8. Curtsy Lunge con Mancuernas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-time">40 seg</span>
+                                <span class="tag tag-muscle">Glúteos • Piernas</span>
+                                <span class="tag tag-peso">5-10 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso entre circuitos</span>
+                    <span class="time">40-90 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir circuito completo <span>4 VECES</span>
+                </div>
+            </div>
+
+            <div class="footer-summary">
+                <div class="icon">✅</div>
+                <h3>Tiempo total: 30-40 min</h3>
+                <p>Incluye calentamiento y elongación</p>
+            </div>
+
+            <div class="cardio-note">
+                <div class="cardio-icon">🏃</div>
+                <div class="cardio-text">
+                    <h4>Cardio adicional</h4>
+                    <p>Completá con <strong>20-40 min</strong> de cardio: caminata, bici, elíptica o trote suave.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIERNES -->
+        <div class="day-content" data-day="viernes">
+            <div class="day-header">
+                <h1>💪 VIERNES<br>FULL BODY</h1>
+                <span class="nivel">NIVEL PRO</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="number">8</div>
+                    <div class="label">Reps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">Series</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40s</div>
+                    <div class="label">Descanso</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="icon">🏋️</div>
+                <div>
+                    <h3>Peso: 5-12 kg por mancuerna</h3>
+                    <p>Ajustá según tu nivel y el ejercicio</p>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 1 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 1</h2>
+                    <span class="section-badge">Tren Superior</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446991002?h=8dcae84388" data-title="Curl Martillo + Clean Press">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Curl Martillo + Clean Press</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Bíceps • Hombros</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431984571?h=278cc541c6" data-title="Press Mancuernas Banco Plano">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Press Mancuernas Banco Plano</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Pecho • Tríceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420420511?h=12fd485f18" data-title="Remo Alternado con Mancuerna">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Remo Alternado con Mancuerna</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Espalda • Bíceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551509852?h=3d193c891a" data-title="Desplante sin Alternar">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Desplante sin Alternar</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Cuádriceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 2 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 2</h2>
+                    <span class="section-badge">Tren Inferior</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155209704?h=994134c9b9" data-title="Renegade Row">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Renegade Row</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Espalda • Core</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/420929355?h=5f9addc7b7" data-title="Peso Muerto Rumano una Pierna">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Peso Muerto Rumano una Pierna</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Isquios • Glúteos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/1155209635?h=d1e87fad2f" data-title="Remo Unilateral">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Remo Unilateral</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Espalda</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431984385?h=ff9378090f" data-title="Peso Muerto">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Peso Muerto</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Isquios • Espalda</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 3 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 3</h2>
+                    <span class="section-badge">Full Body</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/431983531?h=05544e65b1" data-title="Curl Martillo">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Curl Martillo</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Bíceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247917?h=0e061eff2d" data-title="Squat with Calf Raise">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Squat with Calf Raise</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Piernas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/784382400?h=a785bdf80d" data-title="Eccentric Push Up">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Eccentric Push Up</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Pecho • Tríceps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/439140965?h=912c792a67" data-title="Desplantes Fijos con Mancuernas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Desplantes Fijos con Mancuernas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × pierna</span>
+                                <span class="tag tag-muscle">Piernas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <!-- SUPERSERIE 4 - ABDOMEN -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>SUPERSERIE 4 - ABDOMEN</h2>
+                    <span class="section-badge">Core</span>
+                </div>
+                
+                <div class="section-instruction">
+                    ⚡ 4 ejercicios <strong>sin descanso</strong> → 40s pausa → <strong>×4</strong>
+                </div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/439140613?h=aa6a1b2de7" data-title="Hollow Hold">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">1. Hollow Hold</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Abdomen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/446988037?h=bfa64066f3" data-title="Encogimiento de Torso y Rodillas">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">2. Encogimiento de Torso y Rodillas</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Abdomen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/551518639?h=d29ccd39ea" data-title="Russian Twist">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">3. Russian Twist</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps × lado</span>
+                                <span class="tag tag-muscle">Oblicuos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connector"><span class="arrow">↓</span></div>
+
+                <div class="exercise" data-video="https://player.vimeo.com/video/435247986?h=6367844610" data-title="Scissors">
+                    <div class="exercise-inner">
+                        <div class="exercise-play"></div>
+                        <div class="exercise-info">
+                            <div class="exercise-name">4. Scissors</div>
+                            <div class="exercise-tags">
+                                <span class="tag tag-reps">8 reps</span>
+                                <span class="tag tag-muscle">Abdomen bajo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rest-card">
+                    <span class="label">⏱️ Descanso</span>
+                    <span class="time">40 seg</span>
+                </div>
+
+                <div class="repeat-badge">
+                    Repetir <span>4 VECES</span>
+                </div>
+            </div>
+
+            <div class="footer-summary">
+                <div class="icon">✅</div>
+                <h3>Tiempo total: 50-60 min</h3>
+                <p>Incluye calentamiento y elongación</p>
+            </div>
+
+            <div class="cardio-note">
+                <div class="cardio-icon">🏃</div>
+                <div class="cardio-text">
+                    <h4>Cardio adicional</h4>
+                    <p>Completá con <strong>20-40 min</strong> de cardio: caminata, bici, elíptica o trote suave.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO MODAL -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-content">
+            <button class="video-close" id="closeVideo">×</button>
+            <div class="video-container">
+                <iframe id="videoFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+            <div class="video-title" id="videoTitle"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        const tabs = document.querySelectorAll('.nav-tab');
+        const contents = document.querySelectorAll('.day-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.target;
+                
+                // Update tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update content
+                contents.forEach(c => c.classList.remove('active'));
+                document.querySelector(`[data-day="${target}"]`).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Video Modal
+        const modal = document.getElementById('videoModal');
+        const videoFrame = document.getElementById('videoFrame');
+        const videoTitle = document.getElementById('videoTitle');
+        const closeBtn = document.getElementById('closeVideo');
+
+        document.querySelectorAll('.exercise[data-video]').forEach(exercise => {
+            exercise.addEventListener('click', () => {
+                const videoUrl = exercise.dataset.video;
+                const title = exercise.dataset.title;
+                
+                videoFrame.src = videoUrl + '&autoplay=1';
+                videoTitle.textContent = title;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            videoFrame.src = '';
+            document.body.style.overflow = '';
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Close on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Auto-select day based on current day
+        const today = new Date().getDay();
+        const dayMap = {1: 'lunes', 2: 'martes', 3: 'miercoles', 4: 'jueves', 5: 'viernes'};
+        if (dayMap[today]) {
+            const todayTab = document.querySelector(`[data-target="${dayMap[today]}"]`);
+            if (todayTab) todayTab.click();
+        }
+    </script>
+</body>
+</html>
