@@ -460,123 +460,6 @@
             color: #6fcf6f;
         }
 
-        /* VIDEO MODAL */
-        .video-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .video-modal.active {
-            display: flex;
-        }
-
-        .video-modal-content {
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 16px;
-            background: #1e1e1e;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .video-close {
-            position: absolute;
-            top: -50px;
-            right: 0;
-            background: #333;
-            border: none;
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .video-close:active {
-            background: #444;
-        }
-
-        .video-title {
-            color: #fff;
-            font-size: 0.9rem;
-            margin-top: 16px;
-            text-align: center;
-        }
-
-        .video-fallback {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-        }
-
-        .fallback-message {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .fallback-icon {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 16px;
-        }
-
-        .fallback-message p {
-            color: #888;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
-
-        .fallback-btn {
-            display: inline-block;
-            background: linear-gradient(145deg, #d4e900, #c4d800);
-            color: #000;
-            padding: 14px 28px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .fallback-btn:active {
-            transform: scale(0.95);
-        }
-
         /* PWA Install Banner (opcional) */
         .install-prompt {
             display: none;
@@ -1916,26 +1799,6 @@
         </div>
     </div>
 
-    <!-- VIDEO MODAL -->
-    <div class="video-modal" id="videoModal">
-        <div class="video-modal-content">
-            <button class="video-close" id="closeVideo">×</button>
-            <div class="video-container">
-                <iframe id="videoFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-            </div>
-            <div class="video-fallback" id="videoFallback" style="display: none;">
-                <div class="fallback-message">
-                    <span class="fallback-icon">🔒</span>
-                    <p>Este video no permite reproducción embebida</p>
-                    <a id="vimeoDirectLink" href="" target="_blank" class="fallback-btn">
-                        ▶️ Ver en Vimeo
-                    </a>
-                </div>
-            </div>
-            <div class="video-title" id="videoTitle"></div>
-        </div>
-    </div>
-
     <script>
         // Tab Navigation
         const tabs = document.querySelectorAll('.nav-tab');
@@ -1958,93 +1821,20 @@
             });
         });
 
-        // Video Modal
-        const modal = document.getElementById('videoModal');
-        const videoFrame = document.getElementById('videoFrame');
-        const videoTitle = document.getElementById('videoTitle');
-        const closeBtn = document.getElementById('closeVideo');
-        const videoFallback = document.getElementById('videoFallback');
-        const vimeoDirectLink = document.getElementById('vimeoDirectLink');
-        const videoContainer = document.querySelector('.video-container');
-
-        let currentVideoUrl = '';
-
+        // Video - Abrir directamente en Vimeo
         document.querySelectorAll('.exercise[data-video]').forEach(exercise => {
             exercise.addEventListener('click', () => {
                 const videoUrl = exercise.dataset.video;
-                const title = exercise.dataset.title;
                 
-                currentVideoUrl = videoUrl;
-                
-                // Reset state
-                videoFallback.style.display = 'none';
-                videoContainer.style.display = 'block';
-                
-                // Convertir URL de player a URL normal de Vimeo para el link directo
+                // Convertir URL de player a URL normal de Vimeo
                 const videoId = videoUrl.match(/video\/(\d+)/)?.[1];
                 const hashParam = videoUrl.match(/h=([a-z0-9]+)/)?.[1];
                 const directUrl = hashParam 
                     ? `https://vimeo.com/${videoId}/${hashParam}`
                     : `https://vimeo.com/${videoId}`;
-                vimeoDirectLink.href = directUrl;
                 
-                // Intentar cargar el iframe con parámetros adicionales
-                const embedUrl = videoUrl + '&autoplay=1&dnt=1';
-                videoFrame.src = embedUrl;
-                
-                videoTitle.textContent = title;
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                
-                // Detectar si el video no carga (timeout de 3 segundos)
-                setTimeout(() => {
-                    // Intentamos detectar si el iframe cargó contenido válido
-                    try {
-                        // Si llegamos aquí sin error visible, verificamos el contenido
-                        // Nota: No podemos acceder al contenido del iframe por CORS,
-                        // pero podemos ofrecer el botón como alternativa visible
-                    } catch(e) {
-                        showFallback();
-                    }
-                }, 3000);
+                window.open(directUrl, '_blank');
             });
-        });
-
-        function showFallback() {
-            videoContainer.style.display = 'none';
-            videoFallback.style.display = 'flex';
-        }
-
-        // Listener para mensajes de Vimeo Player API (detectar errores)
-        window.addEventListener('message', function(event) {
-            if (event.origin.includes('vimeo')) {
-                try {
-                    const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                    if (data.event === 'error' || data.method === 'error') {
-                        showFallback();
-                    }
-                } catch(e) {
-                    // Ignorar errores de parsing
-                }
-            }
-        });
-
-        function closeModal() {
-            modal.classList.remove('active');
-            videoFrame.src = '';
-            document.body.style.overflow = '';
-            videoFallback.style.display = 'none';
-            videoContainer.style.display = 'block';
-        }
-
-        closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        // Close on escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
         });
 
         // Auto-select day based on current day
